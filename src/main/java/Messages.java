@@ -45,7 +45,6 @@ public class Messages extends ListenerAdapter {
             e.getChannel().sendMessage("pong").queue();
         }
 
-        // Stats command
         if (opener.equals("#vstats")) {
             MessageEmbed statsEmbed = eb.build();
             String valUrl;
