@@ -1,8 +1,6 @@
 import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.*;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 
 import java.awt.*;
@@ -39,6 +37,7 @@ public class ValProfile {
     private String agentEmote2;
     private String agentEmote3;
     private String matches;
+    private String iconUrl;
 
     public ValProfile(String username, WebClient client) {
         this.username = username;
@@ -71,7 +70,7 @@ public class ValProfile {
         HtmlPage page = client.getPage(baseUrl);
         client.waitForBackgroundJavaScript(10000);
 
-        // Get stats
+        // Get Html Elements
         List<HtmlElement> HtmlMostPlayedAgents = page.getByXPath("//span[@class='agent__name']");
         List<HtmlElement> valueClass = page.getByXPath("//span[@class='value']");
         List<HtmlElement> highlightedStat = page.getByXPath("//span[@class='valorant-highlighted-stat__value']");
@@ -81,6 +80,13 @@ public class ValProfile {
         HtmlElement HtmlWinsClass = page.getFirstByXPath("//span[@class='wins']");
         HtmlElement HtmlLossesClass = page.getFirstByXPath("//span[@class='losses']");
         List<HtmlElement> HtmlMutedClass = page.getByXPath("//span[@class='muted']");
+        HtmlElement HtmlImageDiv = page.getFirstByXPath("//div[@class='ph-avatar']");
+
+        // Gets Icon Url
+        DomNode node = HtmlImageDiv.querySelector("image");
+        if(node.getAttributes().getNamedItem("href") !=null) {
+            iconUrl = page.getFullyQualifiedUrl(node.getAttributes().getNamedItem("href").getNodeValue()).toString().toLowerCase();
+        }
 
         // Gets Winrate, Initializes Rank and KD HTML ELEMENTS
         HtmlElement HtmlWinrate = valueClass.get(6);
@@ -95,7 +101,7 @@ public class ValProfile {
             HtmlKd = highlightedStat.get(1);
         }
 
-        // Agent Stats
+        // Agent Stats into Strings
         agentMatches1 = nameClass.get(25).asNormalizedText();
         agentWR1 = nameClass.get(26).asNormalizedText();
         agentKD1 = nameClass.get(27).asNormalizedText();
@@ -327,6 +333,10 @@ public class ValProfile {
 
     public String getAgentEmote3() {
         return agentEmote3;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
     }
 }
 

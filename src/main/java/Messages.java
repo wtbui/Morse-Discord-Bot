@@ -67,7 +67,7 @@ public class Messages extends ListenerAdapter {
                     // Web Scrapes for Profile Data
                     profile.initializeWebscraper(client);
 
-                    // Embed Message
+                    // Edits Original Embed Message
                     eb.setAuthor("Stats for " + profile.getName() + "#" + profile.getTag() + " (Click here for full breakdown)", profile.getUrl());
                     eb.setColor(new Color(245, 59, 83));
                     //eb.addField("Last 20 Games:", winsClass.asNormalizedText() + " " + lossesClass.asNormalizedText() + " " + mutedClass.get(0).asNormalizedText() + "            ", true);
@@ -88,8 +88,10 @@ public class Messages extends ListenerAdapter {
                     eb.addField("Last Game on May 20:", null + " **13-4** | **Competitive** game as "
                             + null + " with a **17/8/4 kda**" + " on **Breeze**", true);
 
-                    // Edits Original Embed Message
-                    eb.setThumbnail("https://preview.redd.it/buzyn25jzr761.png?width=1000&format=png&auto=webp&s=c8a55973b52a27e003269914ed1a883849ce4bdc");
+                    // Adds Icon
+                    eb.setThumbnail(profile.getIconUrl());
+
+                    // Builds Embed
                     statsEmbed = eb.build();
                     e.getChannel().editMessageById(mId, statsEmbed).queue();
 
