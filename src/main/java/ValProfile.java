@@ -9,53 +9,66 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ValProfile {
-    private String username;
-    private String name;
-    private String tag;
-    private String baseUrl;
-    private String rank;
-    private String kd;
-    private String winrate;
-    private boolean compStatus;
-    private String agentMatches1;
-    private String agentWR1;
-    private String agentKD1;
-    private String agentMatches2;
-    private String agentWR2;
-    private String agentKD2;
-    private String agentMatches3;
-    private String agentWR3;
-    private String agentKD3;
-    private String playTime;
-    private String rankEmoji;
-    private String mostPlayedAgent1;
-    private String mostPlayedAgent2;
-    private String mostPlayedAgent3;
-    private String kdEmote;
-    private String winRateEmote;
-    private String agentEmote1;
-    private String agentEmote2;
-    private String agentEmote3;
-    private String matches;
-    private String iconUrl;
+    protected String username;
+    protected String name;
+    protected String tag;
+    protected String baseUrl;
+    protected String rank;
+    protected String kd;
+    protected String winrate;
+    protected boolean compStatus;
+    protected String agentMatches1;
+    protected String agentWR1;
+    protected String agentKD1;
+    protected String agentMatches2;
+    protected String agentWR2;
+    protected String agentKD2;
+    protected String agentMatches3;
+    protected String agentWR3;
+    protected String agentKD3;
+    protected String playTime;
+    protected String rankEmoji;
+    protected String mostPlayedAgent1;
+    protected String mostPlayedAgent2;
+    protected String mostPlayedAgent3;
+    protected String kdEmote;
+    protected String winRateEmote;
+    protected String agentEmote1;
+    protected String agentEmote2;
+    protected String agentEmote3;
+    protected String matches;
+    protected String iconUrl;
+    protected String season;
 
-    public ValProfile(String username, WebClient client) {
-        this.username = username;
+    public ValProfile() {
+        this.username = "default";
 
         // Parses Username
-        parseUsername(this.username);
+        name = "default";
+        tag = "NA1";
 
         // Parses Url
         parseUrl();
     }
 
-    private void parseUsername(String username) {
+    public ValProfile(String username) {
+        this.username = username;
+
+        // Parses Username
+        parseUsername(this.username);
+        this.season = "Current Act";
+
+        // Parses Url
+        parseUrl();
+    }
+
+    protected void parseUsername(String username) {
         String[] valUser = username.split("#", 2);
         name = valUser[0];
         tag = valUser[1];
     }
 
-    private void parseUrl() {
+    protected void parseUrl() {
         String urlName = name;
 
         if (name.contains(" ")) {
@@ -97,6 +110,7 @@ public class ValProfile {
         if (highlightedStat.isEmpty()) {
             compStatus = false;
         } else {
+            compStatus = true;
             HtmlRank = highlightedStat.get(0);
             HtmlKd = highlightedStat.get(1);
         }
@@ -337,6 +351,10 @@ public class ValProfile {
 
     public String getIconUrl() {
         return iconUrl;
+    }
+
+    public String getSeason() {
+        return season;
     }
 }
 
