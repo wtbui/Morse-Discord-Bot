@@ -21,7 +21,7 @@ public class Messages extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
         // Get Command Message
-        String[] brokeString = e.getMessage().getContentRaw().split(" ", 3);
+        String[] brokeString = e.getMessage().getContentRaw().split(" ");
         String opener = brokeString[0];
         EmbedBuilder eb = new EmbedBuilder();
 
@@ -48,15 +48,20 @@ public class Messages extends ListenerAdapter {
 
         try {
             if (opener.equals("#vstats")) {
+                String reforgedUsername = "";
                 MessageEmbed statsEmbed = eb.build();
                 String valUrl;
                 ValProfile profile = new ValProfile();
 
+                for (int i = 2; i < brokeString.length; i++) {
+                    reforgedUsername = reforgedUsername + " " + brokeString[i];
+                }
+
                 // Profile Object
                 if (brokeString[1].equalsIgnoreCase("all")) {
-                    profile = new ValProfileAll(brokeString[2]);
+                    profile = new ValProfileAll(reforgedUsername);
                 } else if (brokeString[1].equalsIgnoreCase("current")) {
-                    profile = new ValProfile(brokeString[2]);
+                    profile = new ValProfile(reforgedUsername);
                 } else {
                     throw new InvalidVStatsException();
                 }
@@ -78,30 +83,21 @@ public class Messages extends ListenerAdapter {
                         profile.initializeWebscraper(client);
 
                         // Edits Original Embed Message
-                        if (profile.isCompStatus()) {
-                            eb.setAuthor(profile.getSeason() + " Stats for " + profile.getName() + "#" + profile.getTag() + " (Click Here for Full Breakdown)", profile.getUrl());
-                            eb.setColor(new Color(245, 59, 83));
-                            //eb.addField("Last 20 Games:", winsClass.asNormalizedText() + " " + lossesClass.asNormalizedText() + " " + mutedClass.get(0).asNormalizedText() + "            ", true);
-                            eb.addField("Total Playtime:", profile.getPlayTime() + " (" + profile.getMatches() + ") ", true);
-                            eb.addBlankField(true);
-                            eb.addField("Most Played Agents(G, WR, KD):", profile.getAgentEmote1() + " " + profile.getMostPlayedAgent1() + " "
-                                    + profile.getAgentMatches1() + "G | " + profile.getAgentWR1() + " | " + profile.getAgentKD1() +
-                                    "\n" + profile.getAgentEmote2() + " " + profile.getMostPlayedAgent2()
-                                    + " " + profile.getAgentMatches2() + "G | " + profile.getAgentWR2() + " | " + profile.getAgentKD2() + "" +
-                                    "\n" + profile.getAgentEmote3() + " " + profile.getMostPlayedAgent3() + " "
-                                    + profile.getAgentMatches3() + "G | " + profile.getAgentWR3() + " | " + profile.getAgentKD3() + "", true);
-                            eb.addField("Competitive Stats:", profile.getRankEmoji() + " " + profile.getRank() +
-                                    "\n" + profile.getKdEmote() + " " + profile.getKd() + " KD" +
-                                    "\n" + profile.getWinRateEmote() + " " + profile.getWinrate() + " Winrate", true);
-                            eb.addBlankField(true);
-                        } else {
-                            // Private Account
-                            eb.clear();
-                            eb.setAuthor(profile.getName() + profile.getTag() + " Does Not Have Any Competitive Stats!", valUrl);
-                            eb.setThumbnail("https://preview.redd.it/buzyn25jzr761.png?width=1000&format=png&auto=webp&s=c8a55973b52a27e003269914ed1a883849ce4bdc");
-                            statsEmbed = eb.build();
-                            e.getChannel().editMessageById(mId, statsEmbed).queue();
-                        }
+                        eb.setAuthor(profile.getSeason() + " Stats for " + profile.getName() + "#" + profile.getTag() + " (Click Here for Full Breakdown)", profile.getUrl());
+                        eb.setColor(new Color(245, 59, 83));
+                        //eb.addField("Last 20 Games:", winsClass.asNormalizedText() + " " + lossesClass.asNormalizedText() + " " + mutedClass.get(0).asNormalizedText() + "            ", true);
+                        eb.addField("Total Playtime:", profile.getPlayTime() + " (" + profile.getMatches() + ") ", true);
+                        eb.addBlankField(true);
+                        eb.addField("Most Played Agents(G, WR, KD):", profile.getAgentEmote1() + " " + profile.getMostPlayedAgent1() + " "
+                                + profile.getAgentMatches1() + "G | " + profile.getAgentWR1() + " | " + profile.getAgentKD1() +
+                                "\n" + profile.getAgentEmote2() + " " + profile.getMostPlayedAgent2()
+                                + " " + profile.getAgentMatches2() + "G | " + profile.getAgentWR2() + " | " + profile.getAgentKD2() + "" +
+                                "\n" + profile.getAgentEmote3() + " " + profile.getMostPlayedAgent3() + " "
+                                + profile.getAgentMatches3() + "G | " + profile.getAgentWR3() + " | " + profile.getAgentKD3() + "", true);
+                        eb.addField("Competitive Stats:", profile.getRankEmoji() + " " + profile.getRank() +
+                                "\n" + profile.getKdEmote() + " " + profile.getKd() + " KD" +
+                                "\n" + profile.getWinRateEmote() + " " + profile.getWinrate() + " Winrate", true);
+                        eb.addBlankField(true);
 
 
                         //UNFINISHED FEATURE
@@ -122,6 +118,13 @@ public class Messages extends ListenerAdapter {
                         eb.setThumbnail("https://preview.redd.it/buzyn25jzr761.png?width=1000&format=png&auto=webp&s=c8a55973b52a27e003269914ed1a883849ce4bdc");
                         statsEmbed = eb.build();
                         e.getChannel().editMessageById(mId, statsEmbed).queue();
+                    } catch (NoCompStatsException ex) {
+                        // Private Account
+                        eb.clear();
+                        eb.setAuthor(profile.getName() + profile.getTag() + " Does Not Have Any Competitive Stats!", valUrl);
+                        eb.setThumbnail("https://preview.redd.it/buzyn25jzr761.png?width=1000&format=png&auto=webp&s=c8a55973b52a27e003269914ed1a883849ce4bdc");
+                        statsEmbed = eb.build();
+                        e.getChannel().editMessageById(mId, statsEmbed).queue();
                     }
 
                 } catch (IOException ex) {
@@ -133,10 +136,7 @@ public class Messages extends ListenerAdapter {
             if (opener.equals("#vgstats")) {
                 MessageEmbed statsEmbed = eb.build();
                 String valUrl;
-                ValProfile profile = new ValProfile();
-
-                // Profile Object
-                profile = new ValGunProfile(brokeString[1]);
+                ValGunProfile profile = new ValGunProfile(brokeString[1]);
 
                 valUrl = profile.getUrl();
                 // LOADING EMBED MESSAGE
@@ -154,24 +154,23 @@ public class Messages extends ListenerAdapter {
                         // Web Scrapes for Profile Data
                         profile.initializeWebscraper(client);
 
-                        // Edits Original Embed Message
-                        if (profile.isCompStatus()) {
-                            eb.setAuthor(" Stats for " + profile.getName() + "#" + profile.getTag() + " (Click Here for Full Breakdown)", profile.getUrl());
-                            eb.setColor(new Color(245, 59, 83));
-                            eb.addField("Top Gun", "Phantom - kills", false);
-                            eb.addField("Best Rifle \"Meta Abuser\":", "Phantom - 1000 kills", false);
-                            eb.addField("Best Heavy \"SharpShooter\"", "Operator - 50 kills", false);
-                            eb.addField("Best Eco \"Coward\"", "Judge - 1000 kills", false);
-                            eb.addField("Best Sidearm \"Demon\"", " Sheriff - 1000 kills", false);
-                            eb.addField("Melee Kills \"Ripper\"", " Sheriff - 1000 kills", false);
-                        } else {
-                            // No Stats
-                            eb.clear();
-                            eb.setAuthor(profile.getName() + profile.getTag() + " Does Not Have Any Competitive Stats!", valUrl);
-                            eb.setThumbnail("https://preview.redd.it/buzyn25jzr761.png?width=1000&format=png&auto=webp&s=c8a55973b52a27e003269914ed1a883849ce4bdc");
-                            statsEmbed = eb.build();
-                            e.getChannel().editMessageById(mId, statsEmbed).queue();
-                        }
+                        eb.setAuthor("Weapon Stats for " + profile.getName() + "#" + profile.getTag() + " (Click Here for Full Breakdown)", profile.getUrl());
+                        eb.setColor(new Color(245, 59, 83));
+                        eb.addField("Top Gun: " + profile.getTopName() + "  " + profile.getTopEmote(), profile.getTopK() + " ("
+                                + profile.getTopHsp() + " Headshot %) Kills", true);
+                        eb.addField(profile.getMeleeK() + " Melee Kills  " + profile.getMeleeEmote(), "", true);
+                        eb.addField("Best Rifle: " + profile.getBestRifle() + "  " + profile.getRifleEmote(), profile.getRifleK() + " Kills - "
+                                + profile.getRifleHs() + " (" + profile.getRifleHsp() + ")" + " Headshots - "
+                                + profile.getRifleLongest() + "m Longest Kill", false);
+                        eb.addField("Best Heavy: " + profile.getBestHeavy() + "  " + profile.getHeavyEmote(), profile.getHeavyK() + " Kills - "
+                                + profile.getHeavyHs() + " (" + profile.getHeavyHsp() + ")" + " Headshots - "
+                                + profile.getHeavyLongest() + "m Longest Kill", false);
+                        eb.addField("Best Eco: " + profile.getBestEco() + "  " + profile.getEcoEmote(), profile.getEcoK() + " Kills - "
+                                + profile.getEcoHs() + " (" + profile.getEcoHsp() + ")" + " Headshots - "
+                                + profile.getEcoLongest() + "m Longest Kill", false);
+                        eb.addField("Best Sidearm: " + profile.getBestSidearm() + "  " + profile.getSidearmEmote(), profile.getSidearmK() + " Kills - "
+                                + profile.getSidearmHs() + " (" + profile.getSidearmHsp() + ")" + " Headshots - "
+                                + profile.getSidearmLongest() + "m Longest Kill", false);
 
                         // Adds Icon
                         eb.setThumbnail(profile.getIconUrl());
@@ -184,6 +183,13 @@ public class Messages extends ListenerAdapter {
                         // Private Account
                         eb.clear();
                         eb.setAuthor("This Profile is Private or Does Not Exist(Click Here to Register Account)", valUrl);
+                        eb.setThumbnail("https://preview.redd.it/buzyn25jzr761.png?width=1000&format=png&auto=webp&s=c8a55973b52a27e003269914ed1a883849ce4bdc");
+                        statsEmbed = eb.build();
+                        e.getChannel().editMessageById(mId, statsEmbed).queue();
+                    } catch (NoCompStatsException ex) {
+                        // No Stats
+                        eb.clear();
+                        eb.setAuthor(profile.getName() + profile.getTag() + " Does Not Have Any Competitive Stats!", valUrl);
                         eb.setThumbnail("https://preview.redd.it/buzyn25jzr761.png?width=1000&format=png&auto=webp&s=c8a55973b52a27e003269914ed1a883849ce4bdc");
                         statsEmbed = eb.build();
                         e.getChannel().editMessageById(mId, statsEmbed).queue();

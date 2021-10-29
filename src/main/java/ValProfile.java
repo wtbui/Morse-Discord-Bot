@@ -13,10 +13,15 @@ public class ValProfile {
     protected String name;
     protected String tag;
     protected String baseUrl;
+    protected String iconUrl;
+    protected String season;
+
     protected String rank;
     protected String kd;
     protected String winrate;
-    protected boolean compStatus;
+    protected String playTime;
+    protected String matches;
+
     protected String agentMatches1;
     protected String agentWR1;
     protected String agentKD1;
@@ -26,19 +31,16 @@ public class ValProfile {
     protected String agentMatches3;
     protected String agentWR3;
     protected String agentKD3;
-    protected String playTime;
-    protected String rankEmoji;
     protected String mostPlayedAgent1;
     protected String mostPlayedAgent2;
     protected String mostPlayedAgent3;
+
+    protected String rankEmoji;
     protected String kdEmote;
     protected String winRateEmote;
     protected String agentEmote1;
     protected String agentEmote2;
     protected String agentEmote3;
-    protected String matches;
-    protected String iconUrl;
-    protected String season;
 
     public ValProfile() {
         this.username = "default";
@@ -64,7 +66,7 @@ public class ValProfile {
 
     protected void parseUsername(String username) {
         String[] valUser = username.split("#", 2);
-        name = valUser[0];
+        name = valUser[0].replace(" ", "");
         tag = valUser[1];
     }
 
@@ -75,13 +77,14 @@ public class ValProfile {
             urlName = name.replace(" ", "%20");
         }
 
-        baseUrl = "https://tracker.gg/valorant/profile/riot/" + urlName + "%23" + tag + "/overview";
+        baseUrl = "https://tracker.gg/valorant/profile/riot/" + urlName + "%23" + tag + "/overview?playlist=competitive";
     }
 
     // Gets HTML Elements from Tracker Site
-    public void initializeWebscraper(WebClient client) throws IOException, FailingHttpStatusCodeException {
+    public void initializeWebscraper(WebClient client) throws IOException, FailingHttpStatusCodeException, NoCompStatsException {
         HtmlPage page = client.getPage(baseUrl);
         client.waitForBackgroundJavaScript(10000);
+        String titleElementString;
 
         // Get Html Elements
         List<HtmlElement> HtmlMostPlayedAgents = page.getByXPath("//span[@class='agent__name']");
@@ -90,10 +93,9 @@ public class ValProfile {
         List<HtmlElement> nameClass = page.getByXPath("//span[@class='name']");
         HtmlElement HtmlPlaytime = page.getFirstByXPath("//span[@class='playtime']");
         HtmlElement HtmlMatches = page.getFirstByXPath("//span[@class='matches']");
-        HtmlElement HtmlWinsClass = page.getFirstByXPath("//span[@class='wins']");
-        HtmlElement HtmlLossesClass = page.getFirstByXPath("//span[@class='losses']");
-        List<HtmlElement> HtmlMutedClass = page.getByXPath("//span[@class='muted']");
         HtmlElement HtmlImageDiv = page.getFirstByXPath("//div[@class='ph-avatar']");
+        HtmlElement titleElement = page.getFirstByXPath("//div[@class='details hasControls hasIcon']/h2"); // NEW
+        titleElementString = titleElement.asNormalizedText(); // NEW
 
         // Gets Icon Url
         DomNode node = HtmlImageDiv.querySelector("image");
@@ -107,10 +109,9 @@ public class ValProfile {
         HtmlElement HtmlKd = null;
 
         // Checks if stats are empty, else gets rank and kd.
-        if (highlightedStat.isEmpty()) {
-            compStatus = false;
+        if (highlightedStat.isEmpty() || titleElementString.contains("Unrated")) {
+            throw new NoCompStatsException();
         } else {
-            compStatus = true;
             HtmlRank = highlightedStat.get(0);
             HtmlKd = highlightedStat.get(1);
         }
@@ -144,7 +145,7 @@ public class ValProfile {
     }
 
     // Gets Emoji Ids
-    public void getEmojis() {
+    protected void getEmojis() {
         // Emoji Map
         HashMap<String, String> emojiMap = new HashMap<String, String>();
         emojiMap.put("iron1", "<:iron1:845205668541104128>");
@@ -263,10 +264,6 @@ public class ValProfile {
 
     public String getWinrate() {
         return winrate;
-    }
-
-    public boolean isCompStatus() {
-        return compStatus;
     }
 
     public String getAgentMatches1() {

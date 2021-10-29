@@ -30,9 +30,10 @@ public class ValProfileAll extends ValProfile {
     }
 
     // Gets HTML Elements from Tracker Site
-    public void initializeWebscraper(WebClient client) throws IOException, FailingHttpStatusCodeException {
+    public void initializeWebscraper(WebClient client) throws IOException, FailingHttpStatusCodeException, NoCompStatsException {
         HtmlPage page = client.getPage(baseUrl);
         client.waitForBackgroundJavaScript(10000);
+        String titleElementString;
 
         // Get Html Elements
         List<HtmlElement> HtmlMostPlayedAgents = page.getByXPath("//span[@class='agent__name']");
@@ -41,10 +42,9 @@ public class ValProfileAll extends ValProfile {
         List<HtmlElement> nameClass = page.getByXPath("//span[@class='name']");
         HtmlElement HtmlPlaytime = page.getFirstByXPath("//span[@class='playtime']");
         HtmlElement HtmlMatches = page.getFirstByXPath("//span[@class='matches']");
-        HtmlElement HtmlWinsClass = page.getFirstByXPath("//span[@class='wins']");
-        HtmlElement HtmlLossesClass = page.getFirstByXPath("//span[@class='losses']");
-        List<HtmlElement> HtmlMutedClass = page.getByXPath("//span[@class='muted']");
         HtmlElement HtmlImageDiv = page.getFirstByXPath("//div[@class='ph-avatar']");
+        HtmlElement titleElement = page.getFirstByXPath("//div[@class='details hasControls hasIcon']/h2"); // NEW
+        titleElementString = titleElement.asNormalizedText(); // NEW
 
         // Gets Icon Url
         DomNode node = HtmlImageDiv.querySelector("image");
@@ -58,10 +58,9 @@ public class ValProfileAll extends ValProfile {
         HtmlElement HtmlKd = null;
 
         // Checks if stats are empty, else gets rank and kd.
-        if (highlightedStat.isEmpty()) {
-            compStatus = false;
+        if (highlightedStat.isEmpty() || titleElementString.contains("Unrated")) {
+            throw new NoCompStatsException(); // NEW
         } else {
-            compStatus = true;
             HtmlRank = highlightedStat.get(0);
             HtmlKd = highlightedStat.get(1);
         }
@@ -70,8 +69,7 @@ public class ValProfileAll extends ValProfile {
         agentMatches1 = nameClass.get(23).asNormalizedText();
         agentWR1 = nameClass.get(24).asNormalizedText();
         agentKD1 = nameClass.get(25).asNormalizedText();
-        agentMatches2 = nameClass.get(28).asNormalizedText();
-        agentWR2 = nameClass.get(29).asNormalizedText();
+        agentMatches2 = nameClass.get(28).asNormalizedText();agentWR2 = nameClass.get(29).asNormalizedText();
         agentKD2 = nameClass.get(30).asNormalizedText();
         agentMatches3 = nameClass.get(33).asNormalizedText();
         agentWR3 = nameClass.get(34).asNormalizedText();
