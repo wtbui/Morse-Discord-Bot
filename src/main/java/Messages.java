@@ -14,7 +14,7 @@ public class Messages extends ListenerAdapter {
     long mId;
 
     public Messages() {
-        System.out.println("MoistBot is online!");
+        System.out.println("MorseBot is online!");
     }
 
     @Override
