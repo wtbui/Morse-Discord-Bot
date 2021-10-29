@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 
-import java.util.*;
 import java.io.IOException;
 
 public class Messages extends ListenerAdapter {
