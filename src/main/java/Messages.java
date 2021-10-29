@@ -41,10 +41,6 @@ public class Messages extends ListenerAdapter {
         client.getOptions().setUseInsecureSSL(true);
 
         // Commands
-        if (opener.equals("#ping")) {
-            e.getChannel().sendMessage("pong").queue();
-        }
-
         try {
             if (opener.equals("#vstats")) {
                 String reforgedUsername = "";
@@ -209,39 +205,6 @@ public class Messages extends ListenerAdapter {
             eb.addField("To Get Gun Stats, Use This: ", "``#vgstats NAME#TAG``", false);
             eb.addField("To Get Last Game Stats Use This: ", "``#vlgstats NAME#TAG``", false);
             e.getChannel().sendMessage(eb.build()).queue();
-        }
-
-        if (opener.equals("#rollcall")) {
-            eb.clear();
-            if (brokeString[1].equalsIgnoreCase("valorant")) {
-                e.getChannel().sendMessage("@Valorant").queue();
-                eb.setAuthor(e.getAuthor().getName() + " is doing roll call for Valorant",e.getAuthor().getAvatarUrl(), e.getAuthor().getAvatarUrl());
-                eb.setColor(new Color(245, 59, 83));
-                eb.setDescription("React below if you are planning on joining");
-                eb.setThumbnail("https://preview.redd.it/buzyn25jzr761.png?width=1000&format=png&auto=webp&s=c8a55973b52a27e003269914ed1a883849ce4bdc");
-            }
-
-            if (brokeString[1].equalsIgnoreCase("league")) {
-                e.getChannel().sendMessage("@League ").queue();
-                eb.setAuthor(e.getAuthor().getName() + " is doing roll call for League",e.getAuthor().getAvatarUrl(), e.getAuthor().getAvatarUrl());
-                eb.setColor(new Color(135, 206, 255));
-                eb.setDescription("React below if you are planning on joining");
-                eb.setThumbnail("https://i.imgur.com/49ojuYU.png");
-            }
-
-            e.getChannel().sendMessage(eb.build()).queue(message ->{
-                eb.addField("\nAttendees", "", false);
-                eb.setFooter("Roll call will end in ");
-                message.editMessage(eb.build()).queue();
-            });
-        }
-
-        if (opener.equals("#testfield")) {
-            e.getChannel().sendMessage(eb.build()).queue();
-        }
-
-        if (e.getAuthor().isBot()) {
-
         }
     }
 
