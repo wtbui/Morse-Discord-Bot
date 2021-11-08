@@ -1,5 +1,6 @@
 \src\main\java\SecretFile.java
 \target\classes\SecretFile.class
-\target\classes\Main.class
+\target\classes\
 
 
+*.class

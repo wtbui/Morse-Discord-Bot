@@ -43,22 +43,27 @@ public class Messages extends ListenerAdapter {
         // Commands
         try {
             if (opener.equals("#vstats")) {
-                String reforgedUsername = "";
+                String reforgedUsername;
                 MessageEmbed statsEmbed = eb.build();
                 String valUrl;
                 ValProfile profile = new ValProfile();
 
-                for (int i = 2; i < brokeString.length; i++) {
+                // Profile Object
+                if (!brokeString[1].equalsIgnoreCase("all") && !brokeString[1].equalsIgnoreCase("current")) {
+                    throw new InvalidVStatsException();
+                }
+
+                reforgedUsername = brokeString[2];
+                for (int i = 3; i < brokeString.length; i++) {
                     reforgedUsername = reforgedUsername + " " + brokeString[i];
                 }
 
-                // Profile Object
                 if (brokeString[1].equalsIgnoreCase("all")) {
                     profile = new ValProfileAll(reforgedUsername);
                 } else if (brokeString[1].equalsIgnoreCase("current")) {
                     profile = new ValProfile(reforgedUsername);
                 } else {
-                    throw new InvalidVStatsException();
+
                 }
 
                 valUrl = profile.getUrl();

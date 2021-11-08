@@ -21,6 +21,7 @@ public class ValProfile {
     protected String winrate;
     protected String playTime;
     protected String matches;
+    protected String highRank;
 
     protected String agentMatches1;
     protected String agentWR1;
@@ -66,7 +67,7 @@ public class ValProfile {
 
     protected void parseUsername(String username) {
         String[] valUser = username.split("#", 2);
-        name = valUser[0].replace(" ", "");
+        name = valUser[0];
         tag = valUser[1];
     }
 
@@ -94,8 +95,10 @@ public class ValProfile {
         HtmlElement HtmlPlaytime = page.getFirstByXPath("//span[@class='playtime']");
         HtmlElement HtmlMatches = page.getFirstByXPath("//span[@class='matches']");
         HtmlElement HtmlImageDiv = page.getFirstByXPath("//div[@class='ph-avatar']");
-        HtmlElement titleElement = page.getFirstByXPath("//div[@class='details hasControls hasIcon']/h2"); // NEW
-        titleElementString = titleElement.asNormalizedText(); // NEW
+        HtmlElement titleElement = page.getFirstByXPath("//div[@class='details hasControls hasIcon']/h2");
+        titleElementString = titleElement.asNormalizedText();
+        List<HtmlElement> highlightedStatLabel = page.getByXPath("//span[@class='valorant-highlighted-stat__label']"); //NEW
+        String statLabel = highlightedStatLabel.get(0).asNormalizedText(); // NEW
 
         // Gets Icon Url
         DomNode node = HtmlImageDiv.querySelector("image");
@@ -103,29 +106,38 @@ public class ValProfile {
             iconUrl = page.getFullyQualifiedUrl(node.getAttributes().getNamedItem("href").getNodeValue()).toString().toLowerCase();
         }
 
+        // Checks if stats are empty, else gets rank and kd.
+        if (highlightedStat.isEmpty() || titleElementString.contains("Unrated")) {
+            throw new NoCompStatsException(); // NEW
+        }
+
         // Gets Winrate, Initializes Rank and KD HTML ELEMENTS
         HtmlElement HtmlWinrate = valueClass.get(6);
         HtmlElement HtmlRank = null;
         HtmlElement HtmlKd = null;
+        HtmlElement HtmlHighRank = highlightedStat.get(1);
 
-        // Checks if stats are empty, else gets rank and kd.
-        if (highlightedStat.isEmpty() || titleElementString.contains("Unrated")) {
-            throw new NoCompStatsException();
-        } else {
+        // GETS RANK
+        if (!statLabel.equalsIgnoreCase("Radiant") && !statLabel.contains("Imm")) {
             HtmlRank = highlightedStat.get(0);
-            HtmlKd = highlightedStat.get(1);
+            rank = HtmlRank.asNormalizedText();
+        } else {
+            rank = statLabel;
+            highRank = HtmlHighRank.asNormalizedText();
         }
 
+        HtmlKd = valueClass.get(4);
+
         // Agent Stats into Strings
-        agentMatches1 = nameClass.get(25).asNormalizedText();
-        agentWR1 = nameClass.get(26).asNormalizedText();
-        agentKD1 = nameClass.get(27).asNormalizedText();
-        agentMatches2 = nameClass.get(30).asNormalizedText();
-        agentWR2 = nameClass.get(31).asNormalizedText();
-        agentKD2 = nameClass.get(32).asNormalizedText();
-        agentMatches3 = nameClass.get(35).asNormalizedText();
-        agentWR3 = nameClass.get(36).asNormalizedText();
-        agentKD3 = nameClass.get(37).asNormalizedText();
+        agentMatches1 = nameClass.get(27).asNormalizedText();
+        agentWR1 = nameClass.get(28).asNormalizedText();
+        agentKD1 = nameClass.get(29).asNormalizedText();
+        agentMatches2 = nameClass.get(32).asNormalizedText();
+        agentWR2 = nameClass.get(33).asNormalizedText();
+        agentKD2 = nameClass.get(34).asNormalizedText();
+        agentMatches3 = nameClass.get(37).asNormalizedText();
+        agentWR3 = nameClass.get(38).asNormalizedText();
+        agentKD3 = nameClass.get(39).asNormalizedText();
         mostPlayedAgent1 = HtmlMostPlayedAgents.get(0).asNormalizedText();
         mostPlayedAgent2 = HtmlMostPlayedAgents.get(1).asNormalizedText();
         mostPlayedAgent3 = HtmlMostPlayedAgents.get(2).asNormalizedText();
@@ -134,14 +146,16 @@ public class ValProfile {
         // Fix Playtime
         playTime = HtmlPlaytime.asNormalizedText().replace("Play Time", "");
 
-        // Get Rank
-        rank = HtmlRank.asNormalizedText();
+        // Puts Stats as Strings
         kd = HtmlKd.asNormalizedText();
         winrate = HtmlWinrate.asNormalizedText();
 
         // Get Emojis
         getEmojis();
 
+        if (highRank != null) {
+            rank = rank + " Rank " + highRank;
+        }
     }
 
     // Gets Emoji Ids
@@ -209,7 +223,7 @@ public class ValProfile {
             rankEmojiKey = "radiant";
         }
 
-        if (!rank.contains("Immo") || !rank.contains("Radia")) {
+        if (!rank.equalsIgnoreCase("Radiant") && !rank.contains("Immo")) {
             if (rank.contains("1")) {
                 rankEmojiKey = rankEmojiKey + "1";
             } else if (rank.contains("2")) {
@@ -352,6 +366,10 @@ public class ValProfile {
 
     public String getSeason() {
         return season;
+    }
+
+    public String getHighRank() {
+        return highRank;
     }
 }
 
