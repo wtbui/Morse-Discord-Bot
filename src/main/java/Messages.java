@@ -34,7 +34,7 @@ public class Messages extends ListenerAdapter {
         eb.setImage("https://preview.redd.it/buzyn25jzr761.png?width=1000&format=png&auto=webp&s=c8a55973b52a27e003269914ed1a883849ce4bdc");
 
         // Web Scraping
-        WebClient client = new WebClient(BrowserVersion.FIREFOX);
+        WebClient client = new WebClient(BrowserVersion.BEST_SUPPORTED);
         client.getOptions().setJavaScriptEnabled(true);
         client.getOptions().setThrowExceptionOnScriptError(false);
         client.getOptions().setCssEnabled(false);
@@ -101,8 +101,8 @@ public class Messages extends ListenerAdapter {
 
 
                         //UNFINISHED FEATURE
-                        eb.addField("Last Game on May 20:", null + " **13-4** | **Competitive** game as "
-                                + null + " with a **17/8/4 kda**" + " on **Breeze**", true);
+                        eb.addField("Last Game on " + profile.getLastGameDay(), null + " **" + profile.getLastGameScore() + "** " + " | **Competitive** game as "
+                                + null + " with a ** " + profile.getLastGameKd() + " kda**" + " on **" + profile.getLastGameMap() + "**", true);
 
                         // Adds Icon
                         eb.setThumbnail(profile.getIconUrl());
