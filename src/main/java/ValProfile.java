@@ -40,6 +40,9 @@ public class ValProfile {
     protected String lastGameDay;
     protected String lastGameScore;
     protected String lastGameKd;
+    protected String lastMode;
+    protected String lastGameAgent;
+    protected String lastGameAgentEmote;
 
     protected String rankEmoji;
     protected String kdEmote;
@@ -87,9 +90,13 @@ public class ValProfile {
     }
 
     // Gets HTML Elements from Tracker Site
-    public void initializeWebscraper(WebClient client) throws IOException, FailingHttpStatusCodeException, NoCompStatsException {
+    public void initializeWebscraper(WebClient client) throws IOException, FailingHttpStatusCodeException, NoCompStatsException, InterruptedException {
+        client.getOptions().setJavaScriptEnabled(true);
+        client.getOptions().setThrowExceptionOnScriptError(false);
         HtmlPage page = client.getPage(baseUrl);
-        client.waitForBackgroundJavaScript(5000);
+        client.waitForBackgroundJavaScript(10000);
+        System.out.println(page.asNormalizedText());
+        System.out.println(page.asXml());
         String titleElementString;
 
         // Get Html Elements
@@ -167,6 +174,16 @@ public class ValProfile {
         // Puts Stats as Strings
         kd = HtmlKd.asNormalizedText();
         winrate = HtmlWinrate.asNormalizedText();
+
+        // Match Stats
+        ValProfileMatchStats matchProfile = new ValProfileMatchStats(baseUrl);
+        client.close();
+        matchProfile.initializeWebScraper();
+        lastGameScore = matchProfile.getWon() + "-" + matchProfile.getLoss();
+        lastGameKd = matchProfile.getKills() + "/" + matchProfile.getDeaths() + "/" + matchProfile.getAssists();
+        lastGameMap = matchProfile.getMap();
+        lastMode = matchProfile.getMode();
+        lastGameAgent = matchProfile.getAgent();
 
         // Get Emojis
         getEmojis();
@@ -268,6 +285,8 @@ public class ValProfile {
         if (Double.parseDouble(winrate.replace("%", "")) < 50) {
             winRateEmote = emojiMap.get("redcircle");
         }
+
+        lastGameAgentEmote = emojiMap.get(lastGameAgent.toLowerCase());
     }
 
     public String getName() {
@@ -404,6 +423,18 @@ public class ValProfile {
 
     public String getLastGameKd() {
         return lastGameKd;
+    }
+
+    public String getLastMode() {
+        return lastMode;
+    }
+
+    public String getLastGameAgent() {
+        return lastGameAgent;
+    }
+
+    public String getLastGameAgentEmote() {
+        return lastGameAgentEmote;
     }
 }
 

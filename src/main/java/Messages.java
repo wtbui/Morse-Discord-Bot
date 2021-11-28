@@ -41,6 +41,18 @@ public class Messages extends ListenerAdapter {
         client.getOptions().setUseInsecureSSL(true);
 
         // Commands
+        if (opener.equals("#help")) {
+            eb.clear();
+            eb.setAuthor("Morse Bot Commands");
+            eb.setColor(new Color(245, 59, 83));
+            eb.setThumbnail(e.getJDA().getSelfUser().getAvatarUrl());
+            eb.addField("To Get Current Act Stats: ", "``#vstats current [NAME#TAG]``", false);
+            eb.addField("To Get All Act Stats: ", "``#vstats all [NAME#TAG]``", false);
+            eb.addField("To Get Gun Stats: ", "``#vgstats [NAME#TAG]``", false);
+//            eb.addField("To Get Last Game Stats:  ", "``#vlgstats [NAME#TAG]``", false);
+            e.getChannel().sendMessage(eb.build()).queue();
+        }
+
         try {
             if (opener.equals("#vstats")) {
                 String reforgedUsername;
@@ -101,8 +113,8 @@ public class Messages extends ListenerAdapter {
 
 
                         //UNFINISHED FEATURE
-                        eb.addField("Last Game on " + profile.getLastGameDay(), null + " **" + profile.getLastGameScore() + "** " + " | **Competitive** game as "
-                                + null + " with a ** " + profile.getLastGameKd() + " kda**" + " on **" + profile.getLastGameMap() + "**", true);
+                        eb.addField("Last Game Stats:", profile.getLastGameAgentEmote() + " **" + profile.getLastGameScore() + "** " + " | **" + profile.getLastMode() + "** game as "
+                                + profile.getLastGameAgent() + " with a ** " + profile.getLastGameKd() + " kda**" + " on **" + profile.getLastGameMap() + "**", true);
 
                         // Adds Icon
                         eb.setThumbnail(profile.getIconUrl());
@@ -125,6 +137,8 @@ public class Messages extends ListenerAdapter {
                         eb.setThumbnail("https://preview.redd.it/buzyn25jzr761.png?width=1000&format=png&auto=webp&s=c8a55973b52a27e003269914ed1a883849ce4bdc");
                         statsEmbed = eb.build();
                         e.getChannel().editMessageById(mId, statsEmbed).queue();
+                    } catch (InterruptedException ex) {
+
                     }
 
                 } catch (IOException ex) {
@@ -208,7 +222,7 @@ public class Messages extends ListenerAdapter {
             eb.addField("To Get Current Act Stats, Use This: ", "``#vstats current NAME#TAG``", false);
             eb.addField("To Get All Act Stats, Use This: ", "``#vstats all NAME#TAG``", false);
             eb.addField("To Get Gun Stats, Use This: ", "``#vgstats NAME#TAG``", false);
-            eb.addField("To Get Last Game Stats Use This: ", "``#vlgstats NAME#TAG``", false);
+//            eb.addField("To Get Last Game Stats Use This: ", "``#vlgstats NAME#TAG``", false);
             e.getChannel().sendMessage(eb.build()).queue();
         }
     }

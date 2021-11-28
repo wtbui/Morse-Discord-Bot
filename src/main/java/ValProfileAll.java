@@ -1,5 +1,6 @@
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -29,11 +30,9 @@ public class ValProfileAll extends ValProfile {
         baseUrl = "https://tracker.gg/valorant/profile/riot/" + urlName + "%23" + tag + "/overview?season=all";
     }
 
-//    // Gets HTML Elements from Tracker Site
-    public void initializeWebscraper(WebClient client) throws IOException, FailingHttpStatusCodeException, NoCompStatsException {
+    // Gets HTML Elements from Tracker Site
+    public void initializeWebscraper(WebClient client) throws IOException, FailingHttpStatusCodeException, NoCompStatsException, InterruptedException {
         HtmlPage page = client.getPage(baseUrl);
-        client.waitForBackgroundJavaScript(10000);
-        System.out.println(page.asNormalizedText());
         String titleElementString;
 
         // Get Html Elements
@@ -48,13 +47,6 @@ public class ValProfileAll extends ValProfile {
         titleElementString = titleElement.asNormalizedText();
         List<HtmlElement> highlightedStatLabel = page.getByXPath("//span[@class='valorant-highlighted-stat__label']"); //NEW
         String statLabel = highlightedStatLabel.get(0).asNormalizedText(); // NEW
-
-        // Last Game Stats
-        HtmlElement HtmlLastGameMap = page.getFirstByXPath("//span[@class='match__name']"); // NEW 11/8
-        HtmlElement HtmlLastGameDay = page.getFirstByXPath("//div[@class='trn-gamereport-list__group-title']/h3"); // NEW 11/8
-        HtmlElement HtmlLastGameScoreWon = page.getFirstByXPath("//div[@class='match__score stat']/span/span[@class='score--won']"); // NEW 11/8
-        HtmlElement HtmlLastGameScoreLost = page.getFirstByXPath("//div[@class='match__score stat']/span/span[@class='score--lost']"); // NEW 11/8
-        HtmlElement HtmlLastGameKd = page.getFirstByXPath("//div[@class='match__row-stats']/div[@class='stat']/div[@class='value']"); // NEW 11/8
 
         // Gets Icon Url
         DomNode node = HtmlImageDiv.querySelector("image");
@@ -102,15 +94,19 @@ public class ValProfileAll extends ValProfile {
         // Fix Playtime
         playTime = HtmlPlaytime.asNormalizedText().replace("Play Time", "");
 
-        // Last Game Stats as Strings
-        lastGameDay = HtmlLastGameDay.asNormalizedText(); // NEW 11/8
-        lastGameKd = HtmlLastGameKd.asNormalizedText();
-        lastGameMap = HtmlLastGameMap.asNormalizedText();
-        lastGameScore = HtmlLastGameScoreWon.asNormalizedText() + " - " + HtmlLastGameScoreLost;
-
         // Get Stats as Strings
         kd = HtmlKd.asNormalizedText();
         winrate = HtmlWinrate.asNormalizedText();
+
+        // Match Stats
+        ValProfileMatchStats matchProfile = new ValProfileMatchStats(baseUrl);
+        client.close();
+        matchProfile.initializeWebScraper();
+        lastGameScore = matchProfile.getWon() + "-" + matchProfile.getLoss();
+        lastGameKd = matchProfile.getKills() + "/" + matchProfile.getDeaths() + "/" + matchProfile.getAssists();
+        lastGameMap = matchProfile.getMap();
+        lastMode = matchProfile.getMode();
+        lastGameAgent = matchProfile.getAgent();
 
         // Get Emojis
         getEmojis();
