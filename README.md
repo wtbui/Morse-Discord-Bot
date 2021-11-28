@@ -9,7 +9,7 @@ This is a Java-based bot for the popular messaging app Discord. The purpose of t
 ## Usage
 **For help use command "#help"**
 
-![Usage](https://i.gyazo.com/347dfdc6840ec3821d26f746bcb67434.gif)
+![Usage](https://i.gyazo.com/b6bf7eae0ab102a779a0c12eaf3ec4ee.png)
 
 
 **Example**
