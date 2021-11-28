@@ -12,6 +12,7 @@ This is a Java-based bot for the popular messaging app Discord. The purpose of t
 ![Usage](https://i.gyazo.com/c4de99f61165024b8786056adb22f47b.png)
 
 
+
 **Example**
 
 ![Usage](https://i.gyazo.com/5953d83d29974f73b47e67f5dcf558dc.gif)
