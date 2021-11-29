@@ -2,9 +2,9 @@
 This is a Java-based bot for the popular messaging app Discord. The purpose of this bot is to gather information about a user’s profile from the multiplayer game Valorant and display it over Discord. The focus of this project was to practice interacting with an API, web-scraping, and OOP concepts. 
 
 ## Features
-1. Competitive stats from current act.
-2. Competitive stats from all acts.
-3. Weapon stats from all acts.
+1. Stats from current act.
+2. Stats from all acts.
+3. Overall weapon stats
 
 ## Usage
 **For help use command "#help"**
