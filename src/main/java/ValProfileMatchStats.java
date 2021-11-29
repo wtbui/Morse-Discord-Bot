@@ -50,9 +50,6 @@ public class ValProfileMatchStats {
         kills = matchList.get(matchList.indexOf("kills") + 24);
         deaths = matchList.get(matchList.indexOf("deaths") + 24);
         assists = matchList.get(matchList.indexOf("assists") + 24);
-
-
-        System.out.println(lastMatch);
     }
 
     public String getAgent() {

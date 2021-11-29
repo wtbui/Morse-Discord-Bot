@@ -91,12 +91,7 @@ public class ValProfile {
 
     // Gets HTML Elements from Tracker Site
     public void initializeWebscraper(WebClient client) throws IOException, FailingHttpStatusCodeException, NoCompStatsException, InterruptedException {
-        client.getOptions().setJavaScriptEnabled(true);
-        client.getOptions().setThrowExceptionOnScriptError(false);
         HtmlPage page = client.getPage(baseUrl);
-        client.waitForBackgroundJavaScript(10000);
-        System.out.println(page.asNormalizedText());
-        System.out.println(page.asXml());
         String titleElementString;
 
         // Get Html Elements
@@ -111,13 +106,6 @@ public class ValProfile {
         titleElementString = titleElement.asNormalizedText();
         List<HtmlElement> highlightedStatLabel = page.getByXPath("//span[@class='valorant-highlighted-stat__label']"); //NEW
         String statLabel = highlightedStatLabel.get(0).asNormalizedText(); // NEW
-
-        // Last Game Stats
-        HtmlElement HtmlLastGameMap = page.getFirstByXPath("//span[@class='match__name']"); // NEW 11/8
-        HtmlElement HtmlLastGameDay = page.getFirstByXPath("//div[@class='trn-gamereport-list__group-title']/h3"); // NEW 11/8
-        HtmlElement HtmlLastGameScoreWon = page.getFirstByXPath("//div[@class='match__score stat']/span/span[@class='score--won']"); // NEW 11/8
-        HtmlElement HtmlLastGameScoreLost = page.getFirstByXPath("//div[@class='match__score stat']/span/span[@class='score--lost']"); // NEW 11/8
-        HtmlElement HtmlLastGameKd = page.getFirstByXPath("//div[@class='match__row-stats']/div[@class='stat']/div[@class='value']"); // NEW 11/8
 
         // Gets Icon Url
         DomNode node = HtmlImageDiv.querySelector("image");
@@ -164,12 +152,6 @@ public class ValProfile {
 
         // Fix Playtime
         playTime = HtmlPlaytime.asNormalizedText().replace("Play Time", "");
-
-        // Last Game Stats as Strings
-        lastGameDay = HtmlLastGameDay.asNormalizedText(); // NEW 11/8
-        lastGameKd = HtmlLastGameKd.asNormalizedText();
-        lastGameMap = HtmlLastGameMap.asNormalizedText();
-        lastGameScore = HtmlLastGameScoreWon.asNormalizedText() + " - " + HtmlLastGameScoreLost;
 
         // Puts Stats as Strings
         kd = HtmlKd.asNormalizedText();

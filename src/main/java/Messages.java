@@ -133,12 +133,19 @@ public class Messages extends ListenerAdapter {
                     } catch (NoCompStatsException ex) {
                         // Private Account
                         eb.clear();
-                        eb.setAuthor(profile.getName() + profile.getTag() + " Does Not Have Any Competitive Stats!", valUrl);
+                        eb.setAuthor(profile.getName() + "#" + profile.getTag() + " Does Not Have Any Competitive Stats!", valUrl);
                         eb.setThumbnail("https://preview.redd.it/buzyn25jzr761.png?width=1000&format=png&auto=webp&s=c8a55973b52a27e003269914ed1a883849ce4bdc");
                         statsEmbed = eb.build();
                         e.getChannel().editMessageById(mId, statsEmbed).queue();
                     } catch (InterruptedException ex) {
 
+                    }  catch (IndexOutOfBoundsException ex) {
+                        // No Stats
+                        eb.clear();
+                        eb.setAuthor(profile.getName() + "#" + profile.getTag() + " Does Not Have Enough Competitive Stats!", valUrl);
+                        eb.setThumbnail("https://preview.redd.it/buzyn25jzr761.png?width=1000&format=png&auto=webp&s=c8a55973b52a27e003269914ed1a883849ce4bdc");
+                        statsEmbed = eb.build();
+                        e.getChannel().editMessageById(mId, statsEmbed).queue();
                     }
 
                 } catch (IOException ex) {
@@ -203,7 +210,14 @@ public class Messages extends ListenerAdapter {
                     } catch (NoCompStatsException ex) {
                         // No Stats
                         eb.clear();
-                        eb.setAuthor(profile.getName() + profile.getTag() + " Does Not Have Any Competitive Stats!", valUrl);
+                        eb.setAuthor(profile.getName() + "#" + profile.getTag() + " Does Not Have Any Competitive Stats!", valUrl);
+                        eb.setThumbnail("https://preview.redd.it/buzyn25jzr761.png?width=1000&format=png&auto=webp&s=c8a55973b52a27e003269914ed1a883849ce4bdc");
+                        statsEmbed = eb.build();
+                        e.getChannel().editMessageById(mId, statsEmbed).queue();
+                    } catch (IndexOutOfBoundsException ex) {
+                        // No Stats
+                        eb.clear();
+                        eb.setAuthor(profile.getName() + "#" + profile.getTag() + " Does Not Have Enough Competitive Stats!", valUrl);
                         eb.setThumbnail("https://preview.redd.it/buzyn25jzr761.png?width=1000&format=png&auto=webp&s=c8a55973b52a27e003269914ed1a883849ce4bdc");
                         statsEmbed = eb.build();
                         e.getChannel().editMessageById(mId, statsEmbed).queue();
