@@ -199,6 +199,7 @@ public class ValProfile {
         emojiMap.put("diamond3", "<:diamond3:845205670420938772>");
         emojiMap.put("radiant", "<:radiant:845205670365757460>");
         emojiMap.put("immortal", "<:immortal:845205670319226880>");
+        emojiMap.put("unrated", "<:unrated:914979270965727262>");
         emojiMap.put("bad", "<:poopy:845240577679425558>");
         emojiMap.put("crowny", "<:crowny:845241528771149854>");
         emojiMap.put("redcircle", "<:redcircle:845242344067301396>");
@@ -238,9 +239,11 @@ public class ValProfile {
             rankEmojiKey = "immortal";
         } else if (rank.contains("Radiant")) {
             rankEmojiKey = "radiant";
+        } else {
+            rankEmojiKey = "unrated";
         }
 
-        if (!rank.equalsIgnoreCase("Radiant") && !rank.contains("Immo")) {
+        if (!rank.equalsIgnoreCase("Radiant") && !rank.contains("Immo") && !rank.contains("Unr")) {
             if (rank.contains("1")) {
                 rankEmojiKey = rankEmojiKey + "1";
             } else if (rank.contains("2")) {
